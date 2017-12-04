@@ -1,2 +1,5 @@
 .vs/OmakaseCategoryFeeder/v14/.suo
 OmakaseCategoryFeeder/App.config
+.vs/
+OmakaseCategoryFeeder/bin/
+OmakaseCategoryFeeder/obj/
