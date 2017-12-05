@@ -7,7 +7,7 @@
     <ProjectGuid>{A7B9DD3E-971B-44B4-BBC8-2EB4BDF2034C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OmakaseCategoryFeeder</RootNamespace>
+    <RootNamespace>Signia.OmakaseCategoryFeeder</RootNamespace>
     <AssemblyName>OmakaseCategoryFeeder</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -33,6 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LightInject, Version=5.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LightInject.5.1.1\lib\net46\LightInject.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,16 +49,47 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostic\ILogger.cs" />
+    <Compile Include="Diagnostic\Logger.cs" />
+    <Compile Include="Diagnostic\LoggerConfig.cs" />
+    <Compile Include="Diagnostic\LoggerEnums.cs" />
+    <Compile Include="Model\Category.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Program.DiContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Impl\CsvCategoriesHierarchyReader.cs" />
+    <Compile Include="Services\Impl\CsvFileReader.cs" />
+    <Compile Include="Services\Impl\CsvMosaiq2017CategoriesColorsPlusGradientReader.cs" />
+    <Compile Include="Services\Interface\ICategoryColorReaderAndAssigner.cs" />
+    <Compile Include="Services\Interface\ICategoryReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Resources\categories-hierarchy.xlsx" />
+    <None Include="Properties\Resources\Mosaiq 2017 Categories&amp;Colors plus gradient.xlsx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Diagnostic\" />
+    <Folder Include="ApiClient\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y $(ProjectDir)Properties\Resources\categories-hierarchy.xlsx $(ProjectDir)$(OutDir)categories-hierarchy.xlsx
+copy /Y $(ProjectDir)Properties\Resources\categories-hierarchy.csv $(ProjectDir)$(OutDir)categories-hierarchy.csv
+copy /Y "$(ProjectDir)Properties\Resources\Mosaiq 2017 Categories&amp;Colors plus gradient.xlsx" "$(ProjectDir)$(OutDir)Mosaiq 2017 Categories&amp;Colors plus gradient.xlsx"
+copy /Y "$(ProjectDir)Properties\Resources\Mosaiq 2017 Categories&amp;Colors plus gradient.csv" "$(ProjectDir)$(OutDir)Mosaiq 2017 Categories&amp;Colors plus gradient.csv"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
