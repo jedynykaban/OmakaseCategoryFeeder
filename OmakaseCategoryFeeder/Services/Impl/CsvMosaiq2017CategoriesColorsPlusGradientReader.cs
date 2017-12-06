@@ -18,6 +18,8 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
 
         private readonly int[] _defaultGradient = {0, 0, 94};
 
+        private int _x;
+        private bool _logOn;
 
         public CsvMosaiq2017CategoriesColorsPlusGradientReader(CsvFileReader csvFileReader, ILogger logger)
         {
@@ -37,32 +39,33 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
 
             foreach (var category in categories)
             {
+                _logOn = true;
                 if (!FindColorForCategory(colors, category, assignColorFromParent, out Tuple<int[], int[]> categoryColors))
                 {
                     _logger.Log(LogLevels.Info, $"Not found color for category: {category.Name} ({nameof(assignColorFromParent)}: {assignColorFromParent})");
                     continue;
                 }
 
-                if (categoryColors.Item1.Length != category.Color.Length)
+                if (categoryColors.Item1.Length != category.ColorArr.Length)
                 {
                     var msg =
-                        $"Something went very wrong..., color HLS len: {categoryColors.Item1.Length} vs. {category.Color.Length})";
+                        $"Something went very wrong..., color HLS len: {categoryColors.Item1.Length} vs. {category.ColorArr.Length})";
                     _logger.Log(LogLevels.Fatal, msg);
                     throw new Exception(msg);
                 }
 
-                if (categoryColors.Item2.Length != category.Gradient.Length)
+                if (categoryColors.Item2.Length != category.GradientArr.Length)
                 {
                     var msg =
-                        $"Something went very wrong..., color HLS len: {categoryColors.Item2.Length} vs. {category.Gradient.Length})";
+                        $"Something went very wrong..., color HLS len: {categoryColors.Item2.Length} vs. {category.GradientArr.Length})";
                     _logger.Log(LogLevels.Fatal, msg);
                     throw new Exception(msg);
                 }
 
-                for (var i = 0; i < category.Color.Length; i++)
-                    category.Color[i] = categoryColors.Item1[i];
-                for (var i = 0; i < category.Gradient.Length; i++)
-                    category.Gradient[i] = categoryColors.Item2[i];
+                for (var i = 0; i < category.ColorArr.Length; i++)
+                    category.ColorArr[i] = categoryColors.Item1[i];
+                for (var i = 0; i < category.GradientArr.Length; i++)
+                    category.GradientArr[i] = categoryColors.Item2[i];
             }
 
         }
@@ -78,7 +81,12 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
                 return true;
 
             if (searchRecurisve)
+            {
+                //if (_logOn)
+                //    _logger.Log(LogLevels.Debug, $"{(++_x).ToString().PadLeft(4, '0')} Category: {category.FullPath} has no color, assginment from parent: {(category.Parent != null ? category.Parent.FullPath : "no parent")}");
+                _logOn = false;
                 return FindColorForCategory(colorRepository, category.Parent, true, out colors);
+            }
 
             return false;
         }
@@ -92,12 +100,14 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
                 {
                     var nameForLog = raw.Length > 0 ? raw[0] : "(?)";
                     _logger.Log(LogLevels.Warning, $"Wrongly defined row {nameForLog} (length: {raw.Length})");
+                    continue;
                 }
 
-                if (raw.Length < 4)
+                if (raw.Length < 4 || string.IsNullOrEmpty(raw[0]))
                 {
                     var nameForLog = raw[0];
-                    _logger.Log(LogLevels.Warning, $"Entry with category name has wrongly defined structure {nameForLog} (length: {raw.Length})");
+                    _logger.Log(LogLevels.Warning, $"Entry with category name has wrongly defined structure [{nameForLog}]   (length: {raw.Length})");
+                    continue;
                 }
 
                 if (!HlsTryParse(raw[3], out int[] hlsColor))
@@ -127,7 +137,7 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
 
             var colorCodeCleaned = colorCode
                 .ToLower()
-                .Replace("hls", "")
+                .Replace("hsl", "")
                 .Replace("(", "")
                 .Replace(")", "")
                 .Replace("%", "");
@@ -156,7 +166,7 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
         {
             if (_csvContent == null || forceFileRead)
                 _csvContent = _csvFileReader
-                    .ReadFile(false)
+                    .ReadFile(false, false)
                     // to possibly exclude first row that can contain column names
                     .Where(line => line.Length > 0 && !line[0].ToLower().StartsWith("IAB Categories".ToLower()))
                     .ToList();

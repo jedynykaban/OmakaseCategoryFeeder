@@ -77,7 +77,7 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
         {
             if (_csvContent == null || forceFileRead)
                 _csvContent = _csvFileReader
-                    .ReadFile(true)
+                    .ReadFile(true, true)
                     // to possibly exclude first row that can contain column names
                     .Where(line => line.Length > 0 && line[0].ToLower() != "level 1") 
                     .ToList();

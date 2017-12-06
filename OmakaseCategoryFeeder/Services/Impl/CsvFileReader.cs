@@ -19,7 +19,7 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
             _csvFileSeparator = csvFileSeparator;
         }
 
-        public List<string[]> ReadFile(bool mustRead)
+        public List<string[]> ReadFile(bool mustRead, bool removeEmptyValues)
         {
             if (!File.Exists(_csvFileLocation))
             {
@@ -32,7 +32,7 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
                 .ReadLines(_csvFileLocation)
                 .Select(line => line
                     .Split(_csvFileSeparator)
-                    .Where(s => !string.IsNullOrEmpty(s))
+                    .Where(s => !removeEmptyValues || !string.IsNullOrEmpty(s))
                     .Select(s => s.Trim())
                     .ToArray())
                 .ToList();

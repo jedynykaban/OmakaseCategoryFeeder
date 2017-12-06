@@ -71,12 +71,41 @@ namespace Signia.OmakaseCategoryFeeder.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to LEVEL 1;LEVEL 2;LEVEL 3;LEVEL 4;LEVEL 5
+        ///art and entertainment;books and literature;best-sellers;;
+        ///art and entertainment;books and literature;children&apos;s books;;
+        ///art and entertainment;books and literature;e-books;;
+        ///art and entertainment;books and literature;fan fiction;;
+        ///art and entertainment;books and literature;magazines;;
+        ///art and entertainment;books and literature;mythology;;
+        ///art and entertainment;books and literature;non-fiction;;
+        ///art and entertainment;books and literature;poetry;;
+        ///art and entert [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string categories_hierarchy1 {
+            get {
+                return ResourceManager.GetString("categories_hierarchy1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Mosaiq_2017_Categories_Colors_plus_gradient {
             get {
                 object obj = ResourceManager.GetObject("Mosaiq_2017_Categories_Colors_plus_gradient", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IAB Categories ( Categories with some modifications. We should use them. Names should start with capital letter) ;;Colours;HSL (new subcategories vary +1- Lightness to - 7);Gradient-on read and on hover;Gradient HSL;Corresponding Gizmag Categories;Corresponding TeknikensVarld Categories;All TeknikensVarld Categories
+        ///Art &amp; Entertainment;;#ff6178;351, 100, 69;#ffc2b8;8, 100, 86;;;Bil och trafik (Car and Traffic)
+        ///books &amp; literature;;#f9627f;348, 93, 68;#fbc2bb;251, 194, 187;;;Miljo och teknik (Environmental  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Mosaiq_2017_Categories_Colors_plus_gradient1 {
+            get {
+                return ResourceManager.GetString("Mosaiq_2017_Categories_Colors_plus_gradient1", resourceCulture);
             }
         }
     }

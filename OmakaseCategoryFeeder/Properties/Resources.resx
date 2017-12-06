@@ -121,7 +121,13 @@
   <data name="categories_hierarchy" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\categories-hierarchy.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="categories_hierarchy1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\categories-hierarchy.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Mosaiq_2017_Categories_Colors_plus_gradient" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\mosaiq 2017 categories&amp;colors plus gradient.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Mosaiq_2017_Categories_Colors_plus_gradient1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\mosaiq 2017 categories&amp;colors plus gradient.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

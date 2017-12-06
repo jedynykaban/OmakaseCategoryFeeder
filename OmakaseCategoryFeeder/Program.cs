@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Signia.OmakaseCategoryFeeder.Diagnostic;
 using LightInject;
+using Signia.OmakaseCategoryFeeder.ApiClient.CommLayer.ApiFusion;
 using Signia.OmakaseCategoryFeeder.Model;
 using Signia.OmakaseCategoryFeeder.Services.Interface;
+using Signia.OmakaseCategoryFeeder.ApiClient.CommLayer.ApiFusion.Specialization;
 
 namespace Signia.OmakaseCategoryFeeder
 {
@@ -51,11 +53,21 @@ namespace Signia.OmakaseCategoryFeeder
             }
 
             // for test purposes only
-            foreach (var category in categories.Where(c => c.FullPath.All(ch => ch != Category.CFullPathSeparator)))
+            logger.Log(LogLevels.Info, $"All categories: {categories.Count()}");
+            foreach (var category in categories.Where(c => c.FullPath.Count(ch => ch == Category.CFullPathSeparator) == 0))
             {
-                logger.Log(LogLevels.Info,
-                    $"{category.FullPath.Count(c => c == Category.CFullPathSeparator) + 1}: {category.FullPath}, color: [{string.Join(",", category.Color)}] & gradient: [{string.Join(",", category.Gradient)}]");
+                logger.Log(LogLevels.Info, category.ToString());
             }
+
+            //for API test purposes only
+            var apiClient = new ApiRequestExecutor(@"http://localhost:8001", logger);
+            foreach (var category in categories.Where(c => c.FullPath.Count(ch => ch == Category.CFullPathSeparator) == 0).Take(2))
+            {
+                var apiResult = apiClient.CategoryByIdRequest("EhMKCENhdGVnb3J5EICAgLaS_IAK");
+
+                logger.Log(LogLevels.Info, apiResult.ToString());
+            }
+
 
             Console.ReadKey();
         }

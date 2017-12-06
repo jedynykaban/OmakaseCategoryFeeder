@@ -39,6 +39,9 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Text, Version=4.5.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Text.4.5.14\lib\net45\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,6 +52,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiClient\CommLayer\ApiFusion\ApiRequestExecutor.cs" />
+    <Compile Include="ApiClient\CommLayer\ApiFusion\BaseApiRequestExecutor.cs" />
+    <Compile Include="ApiClient\CommLayer\ApiFusion\Specialization\CategoryExtensions.cs" />
+    <Compile Include="ApiClient\CommLayer\Configuration\CompressionType.cs" />
+    <Compile Include="ApiClient\CommLayer\Configuration\DataType.cs" />
+    <Compile Include="ApiClient\CommLayer\Configuration\HttpClientFusionConfig.cs" />
+    <Compile Include="ApiClient\CommLayer\HttpRequestExecutor.cs" />
+    <Compile Include="ApiClient\Extensions\CollectionExtensions.cs" />
+    <Compile Include="ApiClient\Extensions\DtoExtensions.cs" />
+    <Compile Include="ApiClient\IApiClient.cs" />
+    <Compile Include="ApiClient\OmakaseClient.cs" />
     <Compile Include="Diagnostic\ILogger.cs" />
     <Compile Include="Diagnostic\Logger.cs" />
     <Compile Include="Diagnostic\LoggerConfig.cs" />
@@ -71,12 +85,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Properties\Resources\categories-hierarchy.csv" />
     <None Include="Properties\Resources\categories-hierarchy.xlsx" />
+    <None Include="Properties\Resources\Mosaiq 2017 Categories&amp;Colors plus gradient.csv" />
     <None Include="Properties\Resources\Mosaiq 2017 Categories&amp;Colors plus gradient.xlsx" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ApiClient\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
