@@ -125,6 +125,7 @@ namespace Signia.OmakaseCategoryFeeder.ApiClient.CommLayer
             catch (Exception ex)
             {
                 _logger.LogException(ex, $"Api call exception: {respContentAsString}");
+                throw new Exception(respContentAsString, ex);
             }
             return respContentAsString;
         }

@@ -32,7 +32,7 @@ namespace Signia.OmakaseCategoryFeeder.Diagnostic
             }
             return new LoggerConfig
             {
-                AppName = "REACTOR.NET",
+                AppName = "OmakaseFeeder",
                 OperationMode = ConfigurationSource.Offline,
                 AppVersion = appVersion
             };
@@ -55,7 +55,7 @@ namespace Signia.OmakaseCategoryFeeder.Diagnostic
         /// </summary>
         private void InitializeOfflineLogger(string appName, string appVersion)
         {
-            _logger = InitializeOfflineLogger($"SigniaReactor_{appName}_{appVersion}", NLogLevel.Trace, NLogLevel.Info);
+            _logger = InitializeOfflineLogger($"{appName}_{appVersion}", NLogLevel.Info, NLogLevel.Info);
             if (_defaultLogger == null)
                 _defaultLogger = this;
         }

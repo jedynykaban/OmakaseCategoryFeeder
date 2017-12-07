@@ -68,6 +68,7 @@
     <Compile Include="Diagnostic\LoggerConfig.cs" />
     <Compile Include="Diagnostic\LoggerEnums.cs" />
     <Compile Include="Model\Category.cs" />
+    <Compile Include="Model\CategoryExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Program.DiContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

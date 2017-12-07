@@ -68,8 +68,14 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
                     _logger.Log(LogLevels.Warning,
                         $"Category [{candidateCategoryName}] is wrongly defined, cannot find parent: [{ancestorFullPath}]");
             }
-            if (category != null)
-                result.Add(category);
+            if (category == null)
+                return null;
+            //is this possible ??
+            var alreadyExistingCategory = result.FirstOrDefault(c => c.FullPath == category.FullPath);
+            if (alreadyExistingCategory != null)
+                _logger.Log(LogLevels.Warning, $"Category already exists, check algorithm: {alreadyExistingCategory}");
+
+            result.Add(category);
             return category;
         }
 

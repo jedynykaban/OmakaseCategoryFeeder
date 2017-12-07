@@ -10,9 +10,9 @@ namespace Signia.OmakaseCategoryFeeder.ApiClient.CommLayer.ApiFusion.Specializat
 
         public static IList<Category> GetAllCategoriesRequest(this BaseApiRequestExecutor apiClient)
         {
-            throw new NotImplementedException("Parsing raw result needs to be added first");
-
-            //return apiClient.HttpGetListDeserialized<Category>(PrefixRoutePath);
+            var candidateResults = apiClient.HttpGetListDeserialized<Category>(PrefixRoutePath);
+            candidateResults.BuildTree();
+            return candidateResults;
         }
 
         public static Category CategoryByIdRequest(this BaseApiRequestExecutor apiClient, string categoryId)

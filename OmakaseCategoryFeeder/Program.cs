@@ -52,22 +52,47 @@ namespace Signia.OmakaseCategoryFeeder
                 logger.Log(LogLevels.Info, $"App: {loggerConfig.AppName} stopped");
             }
 
-            // for test purposes only
-            logger.Log(LogLevels.Info, $"All categories: {categories.Count()}");
-            foreach (var category in categories.Where(c => c.FullPath.Count(ch => ch == Category.CFullPathSeparator) == 0))
-            {
-                logger.Log(LogLevels.Info, category.ToString());
-            }
-
             //for API test purposes only
             var apiClient = new ApiRequestExecutor(@"http://localhost:8001", logger);
-            foreach (var category in categories.Where(c => c.FullPath.Count(ch => ch == Category.CFullPathSeparator) == 0).Take(2))
+            var allStoredCategories = apiClient.GetAllCategoriesRequest();
+            foreach (var category in categories)
             {
-                var apiResult = apiClient.CategoryByIdRequest("EhMKCENhdGVnb3J5EICAgLaS_IAK");
+                try
+                {
+                    var exists = allStoredCategories.FirstOrDefault(c => c.FullPath?.ToLower() == category.FullPath?.ToLower());
+                    if (exists != null)
+                    {
+                        logger.Log(LogLevels.Info, $"category: {category} already exists with ID: {exists.ID} (NO NEED TO ADD)");
+                        continue;
+                    }
 
-                logger.Log(LogLevels.Info, apiResult.ToString());
+                    var parentCategoryPath = category.ParentCategoryPath;
+                    //adjustment about ID/ParentID before possible add category, but would be useful to store info about ID/ParentID
+                    //so... let's try to find matching category
+                    if (!string.IsNullOrEmpty(parentCategoryPath))
+                    {
+                        var parentCategory = allStoredCategories.FirstOrDefault(c => c.FullPath?.ToLower() == parentCategoryPath.ToLower());
+                        if (parentCategory != null)
+                            category.ParentID = parentCategory.ID;
+                        else if (!string.IsNullOrEmpty(category.Parent?.ID))
+                            category.ParentID = category.Parent.ID;
+                        else
+                            throw new Exception($"Cannot determine parent of category: {category}");
+                    }
+
+                    var apiResult = apiClient.CategoryCreateRequest(category);
+                    logger.Log(LogLevels.Info, apiResult.ToString());
+
+                    //must store information about obtained ID
+                    category.ID = apiResult.ID;
+                }
+                catch (Exception e)
+                {
+                    logger.LogException(e, $"Cannot add category: {category}");
+                    //this problem possibly can disallow to build planned tree hierarchy; break execution
+                    throw;
+                }
             }
-
 
             Console.ReadKey();
         }

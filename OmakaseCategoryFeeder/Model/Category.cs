@@ -14,32 +14,50 @@ namespace Signia.OmakaseCategoryFeeder.Model
         public string Name { get; set; }
         public string FullPath { get; set; }
 
+        public string ParentCategoryPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Name))
+                    return string.Empty;
+
+                var levels = FullPath.Split(CFullPathSeparator);
+                if (levels.Length <= 1)
+                    return string.Empty;
+
+                return levels.Take(levels.Length - 1).Aggregate((s, l) => $"{s}{CFullPathSeparator}{l}");
+            }
+        } 
+
         public int[] ColorArr { get; }
         public int[] GradientArr { get; }
 
-        private Hsl _color;
-
         public Hsl Color
         {
-            get => _color;
+            get => new Hsl
+            {
+                H = ColorArr[0],
+                S = ColorArr[1],
+                L = ColorArr[2]
+            };
             set
             {
-                _color = value;
-
                 ColorArr[0] = value?.H ?? 0;
                 ColorArr[1] = value?.S ?? 0;
                 ColorArr[2] = value?.L ?? 0;
-
             }
         }
-        private Hsl _gradient;
+
         public Hsl Gradient
         {
-            get => _gradient;
+            get => new Hsl
+            {
+                H = GradientArr[0],
+                S = GradientArr[1],
+                L = GradientArr[2]
+            };
             set
             {
-                _gradient = value;
-
                 GradientArr[0] = value?.H ?? 0;
                 GradientArr[1] = value?.S ?? 0;
                 GradientArr[2] = value?.L ?? 0;

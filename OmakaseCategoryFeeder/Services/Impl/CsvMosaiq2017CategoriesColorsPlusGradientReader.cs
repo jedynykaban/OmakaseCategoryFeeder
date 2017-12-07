@@ -18,9 +18,6 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
 
         private readonly int[] _defaultGradient = {0, 0, 94};
 
-        private int _x;
-        private bool _logOn;
-
         public CsvMosaiq2017CategoriesColorsPlusGradientReader(CsvFileReader csvFileReader, ILogger logger)
         {
             _csvFileReader = csvFileReader;
@@ -39,7 +36,6 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
 
             foreach (var category in categories)
             {
-                _logOn = true;
                 if (!FindColorForCategory(colors, category, assignColorFromParent, out Tuple<int[], int[]> categoryColors))
                 {
                     _logger.Log(LogLevels.Info, $"Not found color for category: {category.Name} ({nameof(assignColorFromParent)}: {assignColorFromParent})");
@@ -81,15 +77,19 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
                 return true;
 
             if (searchRecurisve)
-            {
-                //if (_logOn)
-                //    _logger.Log(LogLevels.Debug, $"{(++_x).ToString().PadLeft(4, '0')} Category: {category.FullPath} has no color, assginment from parent: {(category.Parent != null ? category.Parent.FullPath : "no parent")}");
-                _logOn = false;
                 return FindColorForCategory(colorRepository, category.Parent, true, out colors);
-            }
-
+ 
             return false;
         }
+
+        private const int SaturationMin = 30;
+        private const int SaturationMax = 80;
+        private const int LumMin = 40;
+        private const int LumMax = 80;
+        private const int GradientSaturationMin = 30;
+        private const int GradientSaturationMax = 100;
+        private const int GradientLumMin = 40;
+        private const int GradientLumMax = 80;
 
         private Dictionary<string, Tuple<int[], int[]>> ParseRawColors(IEnumerable<string[]> rawColors)
         {
@@ -110,15 +110,67 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
                     continue;
                 }
 
-                if (!HlsTryParse(raw[3], out int[] hlsColor))
-                    _logger.Log(LogLevels.Warning, $"Hls color for category: {raw[0]} wrongly defined: {raw[3]}");
-                if (!HlsTryParse(raw[5], out int[] hlsGradient))
+                if (!HslTryParse(raw[3], out int[] hslColor))
+                    _logger.Log(LogLevels.Warning, $"Hsl color for category: {raw[0]} wrongly defined: {raw[3]}");
+                else
                 {
-                    _logger.Log(LogLevels.Debug, $"Hls gradient for category: {raw[0]} wrongly defined: {raw[5]}; assigning default value");
-                    hlsGradient = _defaultGradient;
+                    if (hslColor[1] < SaturationMin)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} saturantion needs to be corrected: {hslColor[1]}");
+                        hslColor[1] = SaturationMin;
+                    }
+                    if (hslColor[1] > SaturationMax)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} saturantion needs to be corrected: {hslColor[1]}");
+                        hslColor[1] = SaturationMax;
+                    }
+                    if (hslColor[2] < LumMin)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} lum needs to be corrected: {hslColor[2]}");
+                        hslColor[2] = LumMin;
+                    }
+                    if (hslColor[2] > LumMax)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} lum needs to be corrected: {hslColor[2]}");
+                        hslColor[2] = LumMax;
+                    }
+                    //extra condition
+                    if (hslColor[0] > 230 && hslColor[0] < 240)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} hue needs to be corrected: {hslColor[0]}");
+                        hslColor[0] = hslColor[0] < 235 ? 230 : 240;
+                    }
+                }
+                if (!HslTryParse(raw[5], out int[] hslGradient))
+                {
+                    _logger.Log(LogLevels.Debug, $"Hsl gradient for category: {raw[0]} wrongly defined: {raw[5]}; assigning default value");
+                    hslGradient = _defaultGradient;
+                }
+                else
+                {
+                    if (hslGradient[1] < GradientSaturationMin)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} saturantion needs to be corrected: {hslGradient[1]}");
+                        hslGradient[1] = GradientSaturationMin;
+                    }
+                    if (hslGradient[1] > GradientSaturationMax)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} saturantion needs to be corrected: {hslGradient[1]}");
+                        hslGradient[1] = GradientSaturationMax;
+                    }
+                    if (hslGradient[2] < GradientLumMin)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} lum needs to be corrected: {hslGradient[2]}");
+                        hslGradient[2] = GradientLumMin;
+                    }
+                    if (hslGradient[2] > GradientLumMax)
+                    {
+                        _logger.Log(LogLevels.Debug, $"Hsl color for category: {raw[0]} lum needs to be corrected: {hslGradient[2]}");
+                        hslGradient[2] = GradientLumMax;
+                    }
                 }
 
-                result.Add(CreateCategoryDictKey(raw[0]), new Tuple<int[], int[]>(hlsColor, hlsGradient));
+                result.Add(CreateCategoryDictKey(raw[0]), new Tuple<int[], int[]>(hslColor, hslGradient));
             }
             return result;
         }
@@ -127,9 +179,10 @@ namespace Signia.OmakaseCategoryFeeder.Services.Impl
             .Replace("&", "and")
             .Replace("(", "")
             .Replace(")", "")
+            .Replace("'", "")
             .ToLower();
 
-        private bool HlsTryParse(string colorCode, out int[] parseResult)
+        private bool HslTryParse(string colorCode, out int[] parseResult)
         {
             parseResult = _defaultGradient;
             if (string.IsNullOrEmpty(colorCode))
