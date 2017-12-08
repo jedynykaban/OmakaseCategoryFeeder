@@ -21,7 +21,7 @@ namespace Signia.OmakaseCategoryFeeder.Model
                 while (node.Parent != null)
                 {
                     path = $"{node.Parent.AssociatedObject.Name}{Category.CFullPathSeparator}{path}";
-                    node = Parent;
+                    node = node.Parent;
                 }
                 return path;
             }

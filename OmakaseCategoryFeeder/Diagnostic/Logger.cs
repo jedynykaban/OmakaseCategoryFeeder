@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using NLog.Config;
 using NLog.Targets;
+using NLog.Targets.Wrappers;
 using NLogger = NLog.Logger;
 using NLogLevel = NLog.LogLevel;
 using NLogManager = NLog.LogManager;
@@ -68,12 +69,13 @@ namespace Signia.OmakaseCategoryFeeder.Diagnostic
             var target = config.FindTargetByName("debugConsoleTarget");
             if (target == null)
             {
-                target = new ConsoleTarget
+                var wrapper = new ConsoleTarget
                 {
                     Name = "debugConsoleTarget",
                     Layout =
                         "${longdate} | ${logger} | ${level}   ${message} ${exception:format=Message, Type, StackTrace:separator=\r\n}"
                 };
+                target = new AsyncTargetWrapper(wrapper, 5000, AsyncTargetWrapperOverflowAction.Discard);
                 // LogLayout.DEFAULT_LAYOUT;
                 config.AddTarget("debugConsoleTarget", target);
                 newRegistrationMsg.AppendLine($"New file target {target.Name} created");
@@ -90,13 +92,14 @@ namespace Signia.OmakaseCategoryFeeder.Diagnostic
             target = config.FindTargetByName("debugFileTarget");
             if (target == null)
             {
-                target = new FileTarget
+                var wrapper = new FileTarget
                 {
                     Name = "debugFileTarget",
-                    FileName = $"{loggerName}_{DateTime.Now.ToString("yyyy-MM-dd")}.txt",
+                    FileName = $"{loggerName}_{DateTime.Now:yyyy-MM-dd}.txt",
                     Layout =
                         "${longdate} | ${logger} | ${level}   ${message} ${exception:format=Message, Type, StackTrace:separator=\r\n}"
                 };
+                target = new AsyncTargetWrapper(wrapper, 5000, AsyncTargetWrapperOverflowAction.Discard);
                 // LogLayout.DEFAULT_LAYOUT;
                 config.AddTarget("debugFileTarget", target);
                 newRegistrationMsg.AppendLine($"New file target {target.Name} created");
